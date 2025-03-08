@@ -1,0 +1,51 @@
+server:
+  port: 8080
+
+spring:
+  application:
+    name: cdc-agent
+
+management:
+  endpoints:
+    web:
+      exposure:
+        include: health,info,prometheus
+  prometheus:
+    metrics:
+      export:
+        enabled: true
+
+debezium:
+  connector:
+    name: mysql-connector
+    offset.storage: org.apache.kafka.connect.storage.FileOffsetBackingStore
+    offset.storage.file.filename: ${user.home}/offsets.dat
+    offset.flush.interval.ms: 60000
+  source:
+    database:
+      hostname: localhost
+      port: 3306
+      user: debezium
+      password: dbz
+      server-id: 1
+      server-name: mysql-server-1
+      include-schema-changes: true
+
+hulft:
+  square:
+    api:
+      url: http://localhost:9000/api/events
+      connectTimeout: 5000
+      readTimeout: 5000
+      writeTimeout: 5000
+      maxInFlight: 100
+      retryCount: 3
+      retryBackoffMs: 1000
+
+logging:
+  level:
+    root: INFO
+    com.example.cdcagent: DEBUG
+    io.debezium: INFO
+  pattern:
+    console: "%d{yyyy-MM-dd HH:mm:ss} [%thread] %-5level %logger{36} - %msg%n" 
